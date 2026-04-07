@@ -41,8 +41,6 @@ func CreateQueueMiddleware(queueName string, connectionSettings m.ConnSettings) 
 		conn:    conn,
 		channel: channel,
 		queue:   queue,
-		state:   idle,
-		consumerTag: "",
 	}
 
 	return qm, nil
@@ -63,12 +61,12 @@ func CreateExchangeMiddleware(exchange string, keys []string, connectionSettings
 
 	err = channel.ExchangeDeclare(
 		exchange,
-		amqp.ExchangeTopic,
-		true,  // durable
-		false, // autoDelete
-		false, // internal
-		false, // noWait
-		nil,   // args
+		"direct", // type
+		false,    // durable
+		false,    // autoDelete
+		false,    // internal
+		false,    // noWait
+		nil,      // args
 	)
 	if err != nil {
 		channel.Close()
@@ -77,12 +75,11 @@ func CreateExchangeMiddleware(exchange string, keys []string, connectionSettings
 	}
 
 	em := &ExchangeMiddleware{
-		conn:     conn,
-		channel:  channel,
-		exchange: amqp.Publishing{},
-		keys:     keys,
-		state:    idle,
+		conn:         conn,
+		channel:      channel,
+		exchangeName: exchange,
+		keys:         keys,
 	}
-	
+
 	return em, nil
 }

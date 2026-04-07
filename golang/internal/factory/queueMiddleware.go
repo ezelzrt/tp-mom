@@ -12,14 +12,6 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-type consumerState int
-
-const (
-	idle consumerState = iota
-	consuming
-	closed
-)
-
 type QueueMiddleware struct {
 	conn        *amqp.Connection
 	channel     *amqp.Channel
@@ -93,7 +85,7 @@ func (qm *QueueMiddleware) StopConsuming() error {
 	if qm.state != consuming {
 		qm.mu.Unlock()
 		return nil
-	} 
+	}
 	consumerTag := qm.consumerTag
 	qm.mu.Unlock()
 
